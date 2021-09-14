@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+$commonNamespace = '\App\Http\Controllers';
+
+Route::namespace($commonNamespace)->group(function() {
+    Route::get('/', 'HomeController@index')->name('home');
 });
