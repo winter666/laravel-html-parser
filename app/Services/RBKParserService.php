@@ -4,16 +4,21 @@
 namespace App\Services;
 
 
-use App\Services\Parser\ParserCollection;
+use App\Interfaces\PageParser;
+use App\Models\Parser\News;
 use App\Services\Parser\ParserItemService;
 use App\Services\Parser\ParserService;
 use App\Services\Request\RequestService;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
-class RBKParserService
+class RBKParserService implements PageParser
 {
 
     private $request;
+    private $news;
+
+    const LOAD_DOMAIN = 'rbk';
 
     public function __construct()
     {
@@ -21,7 +26,7 @@ class RBKParserService
     }
 
 
-    public function getBase() {
+    public function run () {
         $arrayNews = [];
 
         $response = $this->request->getPage();
@@ -51,16 +56,18 @@ class RBKParserService
                     'content' => $this->getTextContentWrap($childrenCollection->getItemByClass($newsItemTitleClass)),
                     'origin_name' => (isset($parsedSpanTimeBlock['content'])) ? $parsedSpanTimeBlock['content'] : null,
                     'external_date' => (isset($parsedSpanTimeBlock['date'])) ? $parsedSpanTimeBlock['date'] : null,
-                    'external_time' => (isset($parsedSpanTimeBlock['time'])) ? $parsedSpanTimeBlock['time'] : null
+                    'external_time' => (isset($parsedSpanTimeBlock['time'])) ? $parsedSpanTimeBlock['time'] : null,
+                    'load_service' => self::LOAD_DOMAIN
                 ];
             }
         }
+        $this->news = $arrayNews;
 
         return $arrayNews;
     }
 
 
-    public function parseTimeBlock(string $text): array {
+    private function parseTimeBlock(string $text): array {
         $arrValues = explode(',', $text);
         $arrRes = [];
         foreach ($arrValues as $explodedStr) {
@@ -80,11 +87,57 @@ class RBKParserService
     }
 
 
-    public function getTextContentWrap(?ParserItemService $parserItemService): ?string {
+    private function getTextContentWrap(?ParserItemService $parserItemService): ?string {
         if (!empty($parserItemService)) {
             return $parserItemService->getTextContent();
         }
         return null;
+    }
+
+
+    public function saveData(int $limit = 15) {
+        $count = 0;
+        foreach ($this->news as $key => $item) {
+            if ($count < $limit) {
+                $count++;
+            } else {
+                break;
+            }
+
+            $validator = Validator::make($item, [
+                'source_link' => 'required',
+                'content' => 'required|string|max:255',
+                'origin_name' => 'nullable|string',
+                'external_date' => 'nullable|string',
+                'external_time' => 'string',
+                'load_service' => 'string'
+            ]);
+
+            if ($validator->fails()) {
+                Log::error('Error on Validation content from ' . self::LOAD_DOMAIN . ': ' . print_r($item, true));
+                unset($this->news[$key]);
+                continue;
+            }
+
+            $this->serializeBeforeSave($item);
+            News::updateOrCreate([
+                'source_link' => $item['source_link'],
+                'content' => $item['content']
+            ], $item);
+        }
+    }
+
+    private function serializeBeforeSave(&$item) {
+        $dateTimeStr = '';
+        if (!empty($item['external_date'])) {
+            $dateTimeStr .= $item['external_date'];
+        }
+        if (!empty($item['external_time'])) {
+            $dateTimeStr .= (strlen($dateTimeStr) > 0) ?  ', ' . $item['external_time'] : $item['external_time'];
+        }
+        unset($item['external_date']);
+        unset($item['external_time']);
+        $item['external_datetime'] = $dateTimeStr;
     }
 
 }
