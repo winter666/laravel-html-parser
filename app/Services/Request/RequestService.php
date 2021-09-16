@@ -20,8 +20,8 @@ class RequestService
     }
 
 
-    public function getPage() {
-        return $this->client->get($this->page_url)->getBody();
+    public function getPage(array $options = []) {
+        return $this->client->get($this->page_url, $options)->getBody();
     }
 
 }

@@ -40,10 +40,10 @@ class RBKParserService implements PageParser
         $newsItemTimeClass = $newsItemClass . '__date';
 
         $newsBlock = $parser->elementById($newsBlockId)
-            ->elementsByTagName('div')
-            ->filterByClass($newsListBlockClass);
+            ->getChildren($newsListBlockClass)
+            ->first();
+        $newsLinkList = $newsBlock->getChildren($newsItemClass);
 
-        $newsLinkList = $newsBlock->first()->getChildren($newsItemClass);
         if ($newsLinkList->count()) {
             $arrayNews = [];
             foreach ($newsLinkList as $newsLink) {

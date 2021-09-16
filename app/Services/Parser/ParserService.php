@@ -22,26 +22,9 @@ class ParserService
         }
     }
 
-
-    public function elementById(string $elemId): ParserService {
+    public function elementById(string $elemId): ParserItemService {
         $this->dom = $this->dom->getElementById($elemId);
-        return $this;
-    }
-
-    public function elementsByTagName(string $tagName): ParserService {
-        $this->dom = $this->dom->getElementsByTagName($tagName);
-        return $this;
-    }
-
-    public function filterByClass($needle): ParserCollection {
-        $collection = new ParserCollection();
-
-        foreach($this->dom as $block) {
-            if ($block->getAttribute('class') === $needle) {
-                $collection->push(new ParserItemService($block));
-            }
-        }
-        return $collection;
+        return (new ParserItemService($this->dom));
     }
 
     public function get() {
