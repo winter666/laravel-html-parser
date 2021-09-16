@@ -17,7 +17,7 @@ class CreateNewsTable extends Migration
             $table->id();
             $table->string('source_link');
             $table->string('content', 255);
-            $table->string('origin_name')->nullable();
+            $table->string('topic')->nullable();
             $table->string('external_datetime');
             $table->enum('load_service', [\App\Services\RBKParserService::LOAD_DOMAIN]);
             $table->timestamps();

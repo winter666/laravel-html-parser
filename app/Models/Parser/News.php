@@ -13,7 +13,7 @@ class News extends Model
     protected $fillable = [
         'source_link',
         'content',
-        'origin_name',
+        'topic',
         'external_datetime',
         'load_service'
     ];

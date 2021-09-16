@@ -54,7 +54,7 @@ class RBKParserService implements PageParser
                 $arrayNews[] = [
                     'source_link' => $newsLink->getAttrByName('href'),
                     'content' => $this->getTextContentWrap($childrenCollection->getItemByClass($newsItemTitleClass)),
-                    'origin_name' => (isset($parsedSpanTimeBlock['content'])) ? $parsedSpanTimeBlock['content'] : null,
+                    'topic' => (isset($parsedSpanTimeBlock['content'])) ? $parsedSpanTimeBlock['content'] : null,
                     'external_date' => (isset($parsedSpanTimeBlock['date'])) ? $parsedSpanTimeBlock['date'] : null,
                     'external_time' => (isset($parsedSpanTimeBlock['time'])) ? $parsedSpanTimeBlock['time'] : null,
                     'load_service' => self::LOAD_DOMAIN
@@ -107,7 +107,7 @@ class RBKParserService implements PageParser
             $validator = Validator::make($item, [
                 'source_link' => 'required',
                 'content' => 'required|string|max:255',
-                'origin_name' => 'nullable|string',
+                'topic' => 'nullable|string',
                 'external_date' => 'nullable|string',
                 'external_time' => 'string',
                 'load_service' => 'string'

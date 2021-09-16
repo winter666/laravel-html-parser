@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\NewsService;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
-    public function index()
+    public function index(NewsService $service)
     {
-        return view('index');
+        $newsList = $service->getAll();
+
+        return view('index', compact('newsList'));
     }
 }
