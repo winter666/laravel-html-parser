@@ -41,7 +41,7 @@
         .news-item__footer > .actions {
             display: flex;
             flex-direction: row;
-            justify-content: space-between;
+            justify-content: flex-end;
         }
         .news-item__footer > .actions > a {
             border: 1px solid #808080;
@@ -83,7 +83,6 @@
                     <div class="news-item__footer">
                         <div class="actions">
                             <a href="{{ $news->source_link }}" target="_blank">Читать источник...</a>
-                            <a href="{{ $news->source_link }}" target="_blank">Читать на этом сервисе...</a>
                         </div>
                     </div>
                 </div>

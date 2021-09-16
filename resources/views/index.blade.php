@@ -27,12 +27,16 @@
 
 
         @media (max-width: 500px) {
+            .main-title {
+                text-align: center;
+            }
             .container {
                 width: 100%;
                 margin: 0;
             }
             .service-list__item {
                 width: 100%;
+                margin: 15px;
             }
         }
     </style>
@@ -40,7 +44,7 @@
 
 @section('content')
     <div class="container">
-        <h3>Источники</h3>
+        <h1 class="main-title">Источники</h1>
         <div class="service-list">
             @foreach($serviceList as $serviceKey => $serviceName)
                 <div class="service-list__item" onclick="window.location.href='{{ route('contents', $serviceKey) }}'">
