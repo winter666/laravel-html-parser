@@ -20,7 +20,7 @@
         }
         .news-item {
             width: 550px;
-            height: 200px;
+            min-height: 200px;
             border: 2px solid #808080;
             border-radius: 15px;
             margin: 15px;
@@ -68,7 +68,7 @@
             @foreach($newsList as $news)
                 <div class="news-item">
                     <div class="news-item__content">
-                        {{ $news->content }}
+                        {{ mb_substr($news->content, 0, 200) }}
                     </div>
                     <div class="news-item__origin">
                         <div class="common">
