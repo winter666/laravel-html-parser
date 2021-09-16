@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Services;
+namespace App\Services\Loaders;
 
 
 use App\Interfaces\PageParser;
