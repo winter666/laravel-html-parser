@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Interfaces\PageParser;
+use App\Services\LoadService;
 use Illuminate\Console\Command;
 
 class Loader extends Command
@@ -23,7 +24,7 @@ class Loader extends Command
         $domain = $this->option('domain');
         if ($domain) {
             // Если домен указан то подгружаем по определенному сервису
-            $loadService = config('allow_load_domains.' . $domain);
+            $loadService = LoadService::getServiceByKey($domain);
             if ($loadService) {
                 // Если этот сервис найден
                 $this->printStart($domain);
@@ -34,7 +35,7 @@ class Loader extends Command
             }
         } else {
             // Если домен не указан - то подгружаем по всему списку
-            $loadServices = config('allow_load_domains');
+            $loadServices = LoadService::ALLOW_LOAD_SERVICES;
 
             foreach ($loadServices as $domain => $service) {
                 $this->printStart($domain);

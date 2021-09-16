@@ -18,7 +18,8 @@ class RBKParserService implements PageParser
     private $request;
     private $news;
 
-    const LOAD_DOMAIN = 'rbk';
+    const SERVICE_KEY = 'rbk';
+    const SERVICE_NAME = 'РБК';
 
     public function __construct()
     {
@@ -57,7 +58,7 @@ class RBKParserService implements PageParser
                     'topic' => (isset($parsedSpanTimeBlock['content'])) ? $parsedSpanTimeBlock['content'] : null,
                     'external_date' => (isset($parsedSpanTimeBlock['date'])) ? $parsedSpanTimeBlock['date'] : null,
                     'external_time' => (isset($parsedSpanTimeBlock['time'])) ? $parsedSpanTimeBlock['time'] : null,
-                    'load_service' => self::LOAD_DOMAIN
+                    'load_service' => self::SERVICE_KEY
                 ];
             }
         }
@@ -114,7 +115,7 @@ class RBKParserService implements PageParser
             ]);
 
             if ($validator->fails()) {
-                Log::error('Error on Validation content from ' . self::LOAD_DOMAIN . ': ' . print_r($item, true));
+                Log::error('Error on Validation content from ' . self::SERVICE_KEY . ': ' . print_r($item, true));
                 unset($this->news[$key]);
                 continue;
             }
