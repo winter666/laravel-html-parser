@@ -17,4 +17,8 @@ $commonNamespace = '\App\Http\Controllers';
 
 Route::namespace($commonNamespace)->group(function() {
     Route::get('/', 'HomeController@index')->name('home');
+
+    Route::middleware('allow_service')->group(function() {
+        Route::get('/{service_key}', 'ContentController@showByService')->name('contents');
+    });
 });

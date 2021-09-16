@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\NewsService;
-use Illuminate\Http\Request;
+use App\Services\LoadService;
 
 class HomeController extends Controller
 {
-    public function index(NewsService $service)
+    public function index(LoadService $service)
     {
-        $newsList = $service->getAll();
+        $serviceList = LoadService::ALLOW_SERVICES_NAMES;
 
-        return view('index', compact('newsList'));
+        return view('index', compact('serviceList'));
     }
 }

@@ -11,7 +11,9 @@ class NewsService
 
     public function getAll()
     {
-        return News::all();
+        return News::query()
+            ->orderBy('id', 'desc')
+            ->get();
     }
 
     public function getById($id) {
@@ -19,7 +21,9 @@ class NewsService
     }
 
     public function getByService($service) {
-        return News::where('load_service', $service)->get();
+        return News::where('load_service', $service)
+            ->orderBy('id', 'desc')
+            ->get();
     }
 
 
