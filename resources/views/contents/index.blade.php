@@ -1,59 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-    <style>
-        .news-container {
-            width: 90%;
-            margin: 0 auto;
-        }
-        .prev-page a {
-            font-size: 0.9rem;
-            color: #808080;
-        }
-        .news {
-            margin: 30px 0;
-            display: flex;
-            flex-direction: row;
-            flex-wrap: wrap;
-            justify-content: flex-start;
-            padding: 0 50px;
-        }
-        .news-item {
-            width: 550px;
-            min-height: 200px;
-            border: 2px solid #808080;
-            border-radius: 15px;
-            margin: 15px;
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-        .news-item__content {
-            text-align: justify;
-            margin-bottom: 10px;
-        }
-        .news-item__origin {
-            display: flex;
-            justify-content: space-between;
-            color: #808080;
-        }
-        .news-item__footer > .actions {
-            display: flex;
-            flex-direction: row;
-            justify-content: flex-end;
-        }
-        .news-item__footer > .actions > a {
-            border: 1px solid #808080;
-            border-radius: 5px;
-            display: block;
-            padding: 3px 5px;
-        }
-        .news-item__footer > .actions > a:hover {
-            background-color: #808080;
-            color: #ffffff;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/contents.css') }}"/>
 @endsection
 
 @section('content')
