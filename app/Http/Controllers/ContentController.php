@@ -14,4 +14,12 @@ class ContentController extends Controller
 
         return view('contents.index', compact('newsList', 'serviceName'));
     }
+
+    public function showContentDetail(NewsService $newsService, $serviceKey, $newsId) {
+        $news = $newsService->getById($newsId);
+        if ($news && $news->detail) {
+            return view('contents.detail', compact('news'));
+        }
+        return redirect(404);
+    }
 }

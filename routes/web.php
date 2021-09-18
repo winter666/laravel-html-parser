@@ -20,5 +20,6 @@ Route::namespace($commonNamespace)->group(function() {
 
     Route::middleware('allow_service')->group(function() {
         Route::get('/{service_key}', 'ContentController@showByService')->name('contents');
+        Route::get('/{service_key}/{content_id}', 'ContentController@showContentDetail')->name('contents.details');
     });
 });

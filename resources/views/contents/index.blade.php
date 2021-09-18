@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', $serviceName)
+
 @section('css')
     <link rel="stylesheet" href="{{ asset('css/contents.css') }}"/>
 @endsection
@@ -30,7 +32,11 @@
                     </div>
                     <div class="news-item__footer">
                         <div class="actions">
-                            <a href="{{ $news->source_link }}" target="_blank">Читать источник...</a>
+                            @if ($news->detail)
+                                <a href="{{ route('contents.details', ['service_key' => $news->load_service, 'content_id' => $news->id]) }}" target="_blank">Подробнее</a>
+                            @else
+                                <a href="{{ $news->source_link }}" target="_blank">Читать источник</a>
+                            @endif
                         </div>
                     </div>
                 </div>

@@ -49,3 +49,33 @@
     background-color: #808080;
     color: #ffffff;
 }
+
+.news__detail {
+    width: 80%;
+    margin: 30px auto;
+}
+
+.news__detail > .image-wrapper {
+    margin-bottom: 20px;
+}
+
+.news__detail > .image-wrapper > img {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.news__detail > .text-content p {
+    font-size: 1.2rem;
+}
+
+@media (max-width: 500px) {
+    .news__detail {
+        width: 100%;
+    }
+}
+
+@media(max-width: 400px) {
+    .news {
+        padding: 0;
+    }
+}
