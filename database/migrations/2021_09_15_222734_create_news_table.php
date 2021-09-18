@@ -20,6 +20,7 @@ class CreateNewsTable extends Migration
             $table->string('topic')->nullable();
             $table->string('external_datetime');
             $table->string('load_service', 200);
+            $table->integer('news_detail_id')->nullable();
             $table->timestamps();
         });
     }
