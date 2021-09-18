@@ -5,15 +5,24 @@ namespace App\Services\Parser;
 
 
 
+use Carbon\Carbon;
+
+/**
+ * @propperty $id
+ * @propperty $dom
+ **/
 class ParserItemService extends ParserService
 {
 
+    public $id;
     protected $dom;
 
     public function __construct($dom)
     {
         parent::__construct();
         $this->dom = $dom;
+        $this->id = time();
+        sleep(1);
     }
 
     public function get() {

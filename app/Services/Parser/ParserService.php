@@ -5,6 +5,7 @@ namespace App\Services\Parser;
 
 
 use DOMDocument;
+use DOMXPath;
 use Illuminate\Support\Facades\Log;
 
 class ParserService
@@ -25,6 +26,17 @@ class ParserService
     public function elementById(string $elemId): ParserItemService {
         $this->dom = $this->dom->getElementById($elemId);
         return (new ParserItemService($this->dom));
+    }
+
+    public function elementsByClassName(string $className): ParserCollection {
+        $domXPath = new DOMXPath($this->dom);
+        $nodeList = $domXPath->query("//*[contains(@class, '$className')]");
+        return (new ParserCollection())->parseCollection($nodeList);
+    }
+
+    public function elementsByTagName(string $tagName) {
+        $nodeList = $this->dom->getElementsByTagName($tagName);
+        return (new ParserCollection())->parseCollection($nodeList);
     }
 
     public function get() {
