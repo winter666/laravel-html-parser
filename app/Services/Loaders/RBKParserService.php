@@ -6,6 +6,7 @@ namespace App\Services\Loaders;
 
 use App\Interfaces\PageParser;
 use App\Models\Parser\News;
+use App\Models\Parser\NewsDetail;
 use App\Services\Parser\ParserItemService;
 use App\Services\Parser\ParserService;
 use App\Services\Request\RequestService;
@@ -17,6 +18,7 @@ class RBKParserService implements PageParser
 
     private $request;
     private $news;
+    private $newsData;
 
     const SERVICE_KEY = 'rbk';
     const SERVICE_NAME = 'РБК';
@@ -30,7 +32,7 @@ class RBKParserService implements PageParser
     public function run () {
         $arrayNews = [];
 
-        $response = $this->request->getPage();
+        $response = $this->request->get();
         $parser = new ParserService($response);
 
         $newsBlockId = 'js_news_feed_banner';
@@ -42,19 +44,19 @@ class RBKParserService implements PageParser
         $newsBlock = $parser->elementById($newsBlockId)
             ->getChildren($newsListBlockClass)
             ->first();
-        $newsLinkList = $newsBlock->getChildren($newsItemClass);
+        $newsLinkList = $newsBlock->getChildren($newsItemClass)->orderById();
 
         if ($newsLinkList->count()) {
             $arrayNews = [];
             foreach ($newsLinkList as $newsLink) {
                 $childrenCollection = $newsLink->getChildren();
-                $spanTime = $childrenCollection->getItemByClass($newsItemTimeClass);
+                $spanTime = $childrenCollection->findFirstByClass($newsItemTimeClass);
                 $spanTimeTextContent = $this->getTextContentWrap($spanTime);
                 $parsedSpanTimeBlock = $this->parseTimeBlock($spanTimeTextContent);
 
                 $arrayNews[] = [
                     'source_link' => $newsLink->getAttrByName('href'),
-                    'content' => $this->getTextContentWrap($childrenCollection->getItemByClass($newsItemTitleClass)),
+                    'content' => $this->getTextContentWrap($childrenCollection->findFirstByClass($newsItemTitleClass)),
                     'topic' => (isset($parsedSpanTimeBlock['content'])) ? $parsedSpanTimeBlock['content'] : null,
                     'external_date' => (isset($parsedSpanTimeBlock['date'])) ? $parsedSpanTimeBlock['date'] : null,
                     'external_time' => (isset($parsedSpanTimeBlock['time'])) ? $parsedSpanTimeBlock['time'] : null,
@@ -121,10 +123,12 @@ class RBKParserService implements PageParser
             }
 
             $this->serializeBeforeSave($item);
-            News::updateOrCreate([
+            $news = News::updateOrCreate([
                 'source_link' => $item['source_link'],
                 'content' => $item['content']
             ], $item);
+
+            $this->loadDetailPage($news);
         }
     }
 
@@ -139,6 +143,45 @@ class RBKParserService implements PageParser
         unset($item['external_date']);
         unset($item['external_time']);
         $item['external_datetime'] = $dateTimeStr;
+    }
+
+    private function loadDetailPage(News $news) {
+        try {
+            $requestService = new RequestService($news->source_link, 200);
+            $response = $requestService->get();
+            $parser = new ParserService($response);
+            $contents = $parser->elementsByTagName('p');
+            if ($contents->count()) {
+                $contentForSave = [];
+                foreach ($contents as $content) {
+                    $textContent = $this->getTextContentWrap($content);
+                    if ($textContent) {
+                        $contentForSave[] = trim($textContent);
+                    }
+                }
+                $content = implode(" <br/> ", $contentForSave);
+
+                $attachments = [];
+                $imgWrap = $parser->elementsByClassName('article__main-image__wrap')->first();
+                // Если есть картинка в новости - сохраняем её
+                if ($imgWrap) {
+                    $imgTag = $imgWrap->getChildren()->first();
+                    $imgHref = $imgTag->getAttrByName('src');
+                    $imgRes = (new RequestService($imgHref))->get();
+                    $attachments = [
+                        [
+                            'name' => time() . "_" . $news->load_service,
+                            'src' => $imgRes
+                        ]
+                    ];
+                }
+                (new NewsDetail())->createData($news, $content, $attachments);
+            } else {
+                throw new \Exception('Ни одного поля не найдено');
+            }
+        } catch (\Exception $e) {
+            Log::error('Failed to try load or save source for ' . $news->load_service . " link: " . $news->source_link . " " . $e->getMessage());
+        }
     }
 
 }
